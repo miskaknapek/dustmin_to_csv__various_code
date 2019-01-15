@@ -1,4 +1,33 @@
 
+# ------------------------ META : notes to self 
+
+"""
+
+- how to generate tabular data : 
+
+-- SKIPPING A LOT OF STEPS 
+
+-- set up time range of relevant time and periods in this
+
+-- set up array of as many slots as time periods in the above
+
+-- fill the array with data
+
+-- get time measurement values of given sensor and time span
+
+-- loop through the time measurements of sensor+time period
+
+-- -- for each of the above : 
+
+-- -- -- loop through each ideal time-range time value
+
+-- -- -- --  check IF the current time value is between the current time value and the next ( of the ideal range ) 
+
+-- -- -- -- -- IF IT IS WITHING THE TIME PERIOD : put it into the array at the relevant positino
+
+-- REPEAT with next sensor
+
+"""
 
 
 
@@ -49,6 +78,8 @@ original_start_time = time.localtime()
 ## data_url = "/Users/miska/Documents/open_something/luftdaten/luftdaten_code/luftDaten__various_data_downloads/20190104_data_exploration/ld_NYE_midnight_24hrs_nordics_all_data_01.csv"
 # smaller
 data_url = "/Users/miska/Documents/open_something/luftdaten/luftdaten_code/luftdaten__make_tabular_data__from_db_data/ld_NYE_midnight_24hrs_nordics_100x_less_data_01.csv"
+# all nordic new year's eve data
+data_url = "/Users/miska/Documents/open_something/luftdaten/luftdaten_code/luftdaten__make_tabular_data__from_db_data/ld_NYE_midnight_24hrs_nordics_all_data_01.csv"
 
 loaded_data = []
 
