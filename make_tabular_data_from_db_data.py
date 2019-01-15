@@ -48,7 +48,7 @@ original_start_time = time.localtime()
 # 
 ## data_url = "/Users/miska/Documents/open_something/luftdaten/luftdaten_code/luftDaten__various_data_downloads/20190104_data_exploration/ld_NYE_midnight_24hrs_nordics_all_data_01.csv"
 # smaller
-data_url = "miskas-MacBook-Pro:~ en__various_data_downloads/20190104_data_exploration/ld_NYE_midnight_24hrs_nordics_100x_less_data_01.csv"
+data_url = "/Users/miska/Documents/open_something/luftdaten/luftdaten_code/luftdaten__make_tabular_data__from_db_data/ld_NYE_midnight_24hrs_nordics_100x_less_data_01.csv"
 
 loaded_data = []
 
