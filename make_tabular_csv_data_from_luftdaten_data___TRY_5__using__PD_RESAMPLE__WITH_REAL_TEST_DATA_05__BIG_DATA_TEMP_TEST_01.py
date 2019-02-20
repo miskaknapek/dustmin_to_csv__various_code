@@ -55,7 +55,7 @@ num_of_sample_time_periods_in_whole_time_span__for_basic_data = 24*20 # 24 hrs *
 nordic_midnight_24_hrs_data__url = "/Users/miska/Documents/open_something/luftdaten/luftdaten_code/luftdaten__make_tabular_data__from_db_data/ld_NYE_midnight_24hrs_nordics_all_data_01.csv"
 ## nordic_midnight_24_hrs_data__url = "/home/miska/documents/opensomething/luftdaten/dustmin_to_csv__various_code/ld_NYE_midnight_24hrs_nordics_all_data_01.csv"
 # nordic_midnight_24_hrs_data__url = "/Users/miska/temp_temp_temp/sds011_files_wo_microsecond_nulling/2018-09_sds011.csv_cleaned.csv"
-nordic_midnight_24_hrs_data__url = "/Users/miska/temp_temp_temp/sds011_files_wo_microsecond_nulling/2018-09_sds011.csv_cleaned__FIRST_500k.csv"
+nordic_midnight_24_hrs_data__url = "/Users/miska/temp_temp_temp/sds011_files_wo_microsecond_nulling/2018-09_sds011.csv_cleaned__FIRST_2000k.csv"
 
 # DATA URL 
 curr_url = nordic_midnight_24_hrs_data__url
@@ -74,6 +74,7 @@ print2("-- loaded data, and it took "+str( time.time() - start_time )+" to load 
 
 # 
 list_of_unique_sensor_ids = []
+num_of_unique_sensors = 0
 
 
 # time length of sample period
@@ -168,19 +169,20 @@ elif current_time_duration_in_data_generation == default__generate_data_for_24_h
 # --- Get the list of unique sensor ids
 
 list_of_unique_sensor_ids = in_data['sensor_id'].unique()
-print2( "-- got "+str( list_of_unique_sensor_ids.shape[0] )+" UNIQUE SENSOR IDS ")
+num_of_unique_sensors = list_of_unique_sensor_ids.shape[0]
+print2( "-- got "+str( num_of_unique_sensors )+" UNIQUE SENSOR IDS ")
 
 # #### make OUT DATA variables
 
-out_data__resampled_sensor_values_as_rows = np.array( np.zeros( list_of_unique_sensor_ids.shape[0] * num_of_sample_time_periods_in_whole_time_span__for_basic_data ) )
+out_data__resampled_sensor_values_as_rows = np.array( np.zeros( num_of_unique_sensors * num_of_sample_time_periods_in_whole_time_span__for_basic_data ) )
 
 # reshape 
-out_data__resampled_sensor_values_as_rows = out_data__resampled_sensor_values_as_rows.reshape( [ list_of_unique_sensor_ids.shape[0], num_of_sample_time_periods_in_whole_time_span__for_basic_data ] )
+out_data__resampled_sensor_values_as_rows = out_data__resampled_sensor_values_as_rows.reshape( [ num_of_unique_sensors, num_of_sample_time_periods_in_whole_time_span__for_basic_data ] )
 
-# make p1 and p2 versions of the out array 
-out_data__resampled_sensor_values_as_rows__p1_values = out_data__resampled_sensor_values_as_rows
-out_data__resampled_sensor_values_as_rows__p2_values = out_data__resampled_sensor_values_as_rows
-out_data__resampled_sensor_values_as_rows__p1_values.shape, out_data__resampled_sensor_values_as_rows__p2_values.shape
+# make P1 and P2 versions of the out array 
+out_data__resampled_sensor_values_as_rows__P1_values = out_data__resampled_sensor_values_as_rows
+out_data__resampled_sensor_values_as_rows__P2_values = out_data__resampled_sensor_values_as_rows
+out_data__resampled_sensor_values_as_rows__P1_values.shape, out_data__resampled_sensor_values_as_rows__P2_values.shape
 
 # --- TEMPORARY out data variable 
 # ( until we run with live data, the size of the outputted data will be a bit wrong )
@@ -190,8 +192,8 @@ temp_out_data = []
 
 # --- make variable for LAT LONG coordinates of sensors
 # x2 so lat lon can be on one row 
-sensors_lat_lon_list = np.array( np.zeros( list_of_unique_sensor_ids.shape[0] *2 ) )
-sensors_lat_lon_list = sensors_lat_lon_list.reshape( [ list_of_unique_sensor_ids.shape[0], 2 ] )
+sensors_lat_lon_list = np.array( np.zeros( num_of_unique_sensors *2 ) )
+sensors_lat_lon_list = sensors_lat_lon_list.reshape( [ num_of_unique_sensors, 2 ] )
 
 
 
@@ -225,10 +227,10 @@ in_data = in_data.sort_index()
 
 # --- set up blank start and end rows
 
-in_data__START_TIME__blank_row = pd.DataFrame( data={"p1": np.NaN, "p2" : np.NaN }, index=pd.DatetimeIndex( [timestamp_last_midnight] ) )
+in_data__START_TIME__blank_row = pd.DataFrame( data={"P1": np.NaN, "P2" : np.NaN }, index=pd.DatetimeIndex( [timestamp_last_midnight] ) )
 
 
-in_data__END_TIME__blank_row = pd.DataFrame( data={"p1": np.NaN, "p2" : np.NaN }, index=pd.DatetimeIndex( [end_timestamp] ) )
+in_data__END_TIME__blank_row = pd.DataFrame( data={"P1": np.NaN, "P2" : np.NaN }, index=pd.DatetimeIndex( [end_timestamp] ) )
 
 
 
@@ -243,7 +245,7 @@ start_time = time.time()
 for current_sensor_id_i in range( len( list_of_unique_sensor_ids[:] )):
 
     if current_sensor_id_i % 100 == 0 : 
-        print2(" -- -- working on sensor id "+str(current_sensor_id_i)+" / "+str( list_of_unique_sensor_ids.shape[0] )+" at time "+str( ( time.time() - start_time ) )  ) 
+        print2(" -- -- working on sensor id "+str(current_sensor_id_i)+" / "+str( num_of_unique_sensors )+" at time "+str( ( time.time() - start_time ) )  ) 
 
     # get current sensor id 
     current_sensor_id = list_of_unique_sensor_ids[ current_sensor_id_i ]
@@ -266,8 +268,8 @@ for current_sensor_id_i in range( len( list_of_unique_sensor_ids[:] )):
 #     print("- - - - input lat lon : "+str( curr_sensor_id__in_data[0]['lat'] )+","+str( curr_sensor_id__in_data[0]['lon'] ) )    
     
     
-    # minimise the in_data, so it's easier to resample the p1 and p2 values
-    curr_sensor_id__in_data = curr_sensor_id__in_data[ ['p1', 'p2'] ]
+    # minimise the in_data, so it's easier to resample the P1 and P2 values
+    curr_sensor_id__in_data = curr_sensor_id__in_data[ ['P1', 'P2'] ]
     
     print("\n- - working on sensor id "+str( current_sensor_id)+" - - got "+str( curr_sensor_id__in_data.shape[0])+" rows of data" )
     
@@ -316,7 +318,7 @@ if saving_data == True :
     sensors_lat_lon_list
 
 
-    # prepare p1 and p2 data … 
+    # prepare P1 and P2 data … 
 
 
 
@@ -330,8 +332,8 @@ if saving_data == True :
     # - num_of_sample_periods
     # - list_of_sensor_ids
     # - lat_lon # in the same order as sensor_ids
-    # - p1_values # in the same order as sensor_ids
-    # - p2_values # in the same order as sensor_ids
+    # - P1_values # in the same order as sensor_ids
+    # - P2_values # in the same order as sensor_ids
 
 
 
@@ -342,8 +344,8 @@ if saving_data == True :
     exported_data[ 'num_of_sample_periods' ] = num_of_sample_time_periods_in_whole_time_span__for_basic_data
     exported_data[ 'sensor_ids' ] = list_of_unique_sensor_ids
     exported_data[ 'lat_lon' ] = sensors_lat_lon_list
-    exported_data[ 'data__p1_values' ] = out_data__resampled_sensor_values_as_rows__p1_values
-    exported_data[ 'data__p1_values' ] = out_data__resampled_sensor_values_as_rows__p2_values
+    exported_data[ 'data__P1_values' ] = out_data__resampled_sensor_values_as_rows__P1_values
+    exported_data[ 'data__P1_values' ] = out_data__resampled_sensor_values_as_rows__P2_values
 
 
     ## --- --- save data? 
