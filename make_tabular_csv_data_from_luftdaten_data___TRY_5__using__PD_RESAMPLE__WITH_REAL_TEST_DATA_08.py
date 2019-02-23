@@ -466,7 +466,7 @@ if saving_data == True :
     # or, ir generating data from midnight to midnight
     elif current_time_duration_in_data_generation == default__generate_data_for_24_hour_period_starting_from_starttime:
         curr_timedate = pd.Timestamp.now()
-        curr_filename = file_name__for__generate_data_since_midnight+str( curr_timedate.yeah )+str( curr_timedate.month )+str( curr_timedate.date)+file_name_suffix
+        curr_filename = file_name__for__generate_data_since_midnight+str( curr_timedate.year )+str( curr_timedate.month )+str( curr_timedate.date)+file_name_suffix
 
     print( "\n -- -- -- -- : saving filename |"+curr_filename+"|" )
 
