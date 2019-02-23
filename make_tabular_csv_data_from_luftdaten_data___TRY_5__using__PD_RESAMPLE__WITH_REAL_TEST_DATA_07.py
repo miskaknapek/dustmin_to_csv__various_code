@@ -39,10 +39,9 @@ import json
 print2 = print
 
 # this takes out the print behaviour 
-"""
 def print( x ):
     return 1
-"""
+
 
 ## --- --- --- --- --- --- general operations - what kind of time length in the data, are we outputting
 
@@ -93,7 +92,7 @@ basic_file_path_to_final_file = ""
 
 file_name__for__generate_data_since_midnight = "latest_data_since_midnight"
 
-file_name__for__generate_given_24_houss = "24_hrs_pm_data_"
+file_name__for__generate_given_24_hours = "24_hrs_pm_data__starting_from__"
 
 file_name_suffix = ".json"
 
@@ -330,7 +329,7 @@ print2("\n -- -- GETTING READY TO LOOP! at time "+str( time.time() - total_start
 # loop
 if do_resampling_loop : 
     # for each index to each sensor id 
-    for current_sensor_id_i in range( len( list_of_unique_sensor_ids[:2] )):
+    for current_sensor_id_i in range( len( list_of_unique_sensor_ids[:] )):
 
         if current_sensor_id_i % 100 == 0 : 
             print2("\n--- --- --- working on sensor id "+str(current_sensor_id_i)+" / "+str( list_of_unique_sensor_ids.shape[0] )+" at time "+str( ( time.time() - start_time ) )  ) 
@@ -422,7 +421,7 @@ print("\n ------- saving data? |"+str( saving_data )+"|" )
 if saving_data == True : 
 
     ## --- --- prepare data for export 
-    print("------- ------- NOW SAVING DATA - at time "+str( time.time() - total_start_time ))
+    print2("------- ------- NOW SAVING DATA - at time "+str( time.time() - total_start_time ))
 
     # --- --- --- ---  finally prepare for export 
     # json : 
@@ -466,9 +465,9 @@ if saving_data == True :
     # or, ir generating data from midnight to midnight
     elif current_time_duration_in_data_generation == default__generate_data_for_24_hour_period_starting_from_starttime:
         curr_timedate = pd.Timestamp.now()
-        curr_filename = file_name__for__generate_data_since_midnight+str( curr_timedate.year )+str( curr_timedate.month )+str( curr_timedate.date)+file_name_suffix
-
-    print( "\n -- -- -- -- : saving filename |"+curr_filename+"|" )
+        curr_filename = file_name__for__generate_given_24_hours+str( curr_timedate.year )+str( curr_timedate.month )+str( curr_timedate.day)+file_name_suffix
+ 
+    print2( "\n -- -- -- -- : saving filename |"+curr_filename+"|" )
 
 
     # save!
