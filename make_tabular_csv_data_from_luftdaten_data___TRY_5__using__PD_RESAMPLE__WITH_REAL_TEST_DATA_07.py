@@ -542,7 +542,7 @@ if saving_data == True :
     # or, ir generating data from midnight to midnight
     elif do_time_since_midnight == False:
         curr_timedate = pd.Timestamp.now()
-        curr_filename = basic_file_path_to_final_file+file_name__for__generate_given_24_hours+str( start_date__if_doing_24_hours_data.year )+str( start_date__if_doing_24_hours_data.month )+str( start_date__if_doing_24_hours_data.day)+file_name_suffix
+        curr_filename = basic_file_path_to_final_file+file_name__for__generate_given_24_hours+"-"+str( start_date__if_doing_24_hours_data.year )+"-"+str( start_date__if_doing_24_hours_data.month )+"-"+str( start_date__if_doing_24_hours_data.day)+file_name_suffix
  
     print2( "\n -- -- -- -- : saving filename |"+curr_filename+"|" )
 
