@@ -45,10 +45,32 @@ print2 = print
 def print( x ):
    return 1
 
+ 
+## --- --- --- --- --- --- database and table names 
+
+# -- DATABASE NAMES 
+
+# database_name = "ld_realtime_data_02"       # REALTIME DATA 
+database_name = "ld_ts_older_data"                   # OLDER DATA 
+
+
+# -- TABLE NAMES 
+
+# table_name = "fill_me_w_ld_daten_06"        # REALTIME DATA 
+
+## --- table names from the ld_ts_older_data database
+# ld_ts_2018_05d_chks_ts_idx                          # OLDER DATA 
+table_name = "ld_ts_2018_05d_chks_ts_n_snid_idx"    # OLDER DATA 
+
+# -- COLUMN NAMES
+
+columns_names =  [ "index_", "sensor_id", "lat", "lon", "timestamp", "p1", "p2", "fixed_p1_value", "fixed_p2_value", "fixed_latlon_values" ]   # OLDER DATA 
+# columns_names =  ['sensor_id', 'sensor_name', 'lat', 'lon', 'timestamp', 'p1', 'p2']    # REALTIME DATA 
+
 
 ## --- --- --- --- --- --- general operations - what kind of time length in the data, are we outputting
 
-# -- set default values 
+# ---  set default values 
 
 # Do we generate time periods since midnight (True) or full 24 hour periods ( False ) 
 # true == do since midnight until now 
@@ -134,7 +156,7 @@ total_start_time = time.time()
 
 
 # which directory is the file in? 
-basic_file_path_to_final_file = "" 
+basic_file_path_to_final_file = "/mnt/virtio-bbc6cf3a-042b-4410-9/luftdaten/luftdaten_daten/tabular_data/" 
 
 # filename beginning for files about the laest data
 
@@ -282,18 +304,18 @@ if do_sql_data_fetch == True:
 
     print2("-- -- PSQL QUERY : attempting to connect to DB, executing query ")
 
-    conn = psycopg2.connect("dbname='ld_realtime_data' user='postgres' password='secret' host='localhost' ")
+    conn = psycopg2.connect("dbname='"+database_name+"' user='postgres' password='secret' host='localhost' ")
 
     cur = conn.cursor()
 
-    query = "select * from fill_me_w_ld_daten_02 where timestamp > '"+str( start_timestamp )+"' and timestamp < '"+str( end_timestamp )+"' "
+    query = "select * from "+table_name+" where timestamp > '"+str( start_timestamp )+"' and timestamp < '"+str( end_timestamp )+"' "
     print2( "-- -- running psql query |"+query+"|" )
 
     cur.execute( query )
 
     print2("-- --- query ready at "+str( time.time() - mini_timing ) ) 
 
-    in_data = pd.DataFrame( cur.fetchall(), columns=['sensor_id', 'sensor_name', 'lat', 'lon', 'timestamp', 'p1', 'p2'] )
+    in_data = pd.DataFrame( cur.fetchall(), columns=columns_names )
 
     print2("\n --- --- got table of shape "+str( in_data.shape )+" "+str( time.time() - mini_timing ) )    
     print2("--- --- got columns : |"+str( in_data.columns)+"|" )
@@ -515,12 +537,12 @@ if saving_data == True :
 
     # if generating data from last midnight until current time
     if do_time_since_midnight == True:
-        curr_filename = file_name__for__generate_data_since_midnight+file_name_suffix
+        curr_filename = basic_file_path_to_final_file+file_name__for__generate_data_since_midnight+file_name_suffix
     #
     # or, ir generating data from midnight to midnight
     elif do_time_since_midnight == False:
         curr_timedate = pd.Timestamp.now()
-        curr_filename = file_name__for__generate_given_24_hours+str( start_date__if_doing_24_hours_data.year )+str( start_date__if_doing_24_hours_data.month )+str( start_date__if_doing_24_hours_data.day)+file_name_suffix
+        curr_filename = basic_file_path_to_final_file+file_name__for__generate_given_24_hours+str( start_date__if_doing_24_hours_data.year )+str( start_date__if_doing_24_hours_data.month )+str( start_date__if_doing_24_hours_data.day)+file_name_suffix
  
     print2( "\n -- -- -- -- : saving filename |"+curr_filename+"|" )
 
