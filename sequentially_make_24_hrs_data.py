@@ -29,7 +29,7 @@ def makedates( start_timestamp, how_many_days_dates_to_produce ):
 
 ## -- run?!
 
-days_to_make = makedates( pd.Timestamp( 2018, 12, 1), 31 )
+days_to_make = makedates( pd.Timestamp( 2018, 12, 1), 62 )
 
 
 
@@ -46,7 +46,7 @@ def make_24_hour_files_of_tabular_luftdaten_data( days_to_make ):
 
 	for date_ in days_to_make:
 		print("\n\n ==============================================================================================")
-		print("===== make_24_hour_files_of_tabular_luftdaten_data() : making date "+str( date_ )+" at time "+str( time.time() -start_time )+ )
+		print("===== make_24_hour_files_of_tabular_luftdaten_data() : making date "+str( date_ )+" at time "+str( time.time() -start_time ) )
 		print("\n\n ==============================================================================================")
 
 		date_with_only__year_month_day__as_str = str( date_.year )+"-"+str( date_.month )+"-"+str( date_.day )
