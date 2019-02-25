@@ -2,7 +2,8 @@ import pandas as pd
 import time
 import os 
 
-print( "Hellow there!" )
+print( "\n ---------- Hellow (world) there!\n ------------ " )
+
 
 
 ### ----- make some dates… 
@@ -49,6 +50,8 @@ def make_24_hour_files_of_tabular_luftdaten_data( days_to_make ):
 		date_with_only__year_month_day__as_str = str( date_.year )+"-"+str( date_.month )+"-"+str( date_.day )
 
 		os.system( "/root/anaconda3/bin/python3 /mnt/virtio-bbc6cf3a-042b-4410-9/luftdaten/luftdaten_code/dustmin_to_csv__various_code/make_tabular_csv_data_from_luftdaten_data___TRY_5__using__PD_RESAMPLE__WITH_REAL_TEST_DATA_08.py "+str( date_with_only__year_month_day__as_str ) )
+
+	print("\n ------------ FIIIIIIIINNNNNIIIIISSSSSHHHHHEEEEEDDDDD in "+str( time.time() - start_time )+" seconds" )
 
 ## -- run 
 
