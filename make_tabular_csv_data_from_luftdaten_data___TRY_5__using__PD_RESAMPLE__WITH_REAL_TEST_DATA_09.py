@@ -46,12 +46,94 @@ def print( x ):
    return 1
 
  
+
+## ===================== FUNCTIONS ==============================
+
+## -- --- --- --- FUNCTION : How many sample periods fit into the time duration examined?
+
+
+def figure_out_how_many_sample_time_periods_fit_in_desired_sample_time_duration( kind_of_time_period_we_are_doing, time_length_of_sample_period__in_seconds, if_date_range__start_time=0, if_date_range__end_time=0, ):
+    
+    print("\n >>> figure_out_how_many_sample_time_periods_fit_in_desired_sample_time_duration : checking time period : doing time since midnight : |"+str(kind_of_time_period_we_are_doing)+"| single sample time length : |"+str(time_length_of_sample_period__in_seconds)+"| - start/end periods if doing date range :  |"+str(if_date_range__start_time)+"| - |"+str(if_date_range__end_time)+"|" ) 
+    
+    num_of_sample_time_periods_fit_in_total_sampled_period = 0
+    
+    # 24 hours period
+    if kind_of_time_period_we_are_doing == "kind_of_time_period_we_are_doing__one_day_only":
+        num_of_sample_time_periods_fit_in_total_sampled_period = int( ( 24*60*60 / time_length_of_sample_period__in_seconds ) ) 
+    
+    # since midnight period 
+    if kind_of_time_period_we_are_doing == "kind_of_time_period_we_are_doing__since_midnight":
+        ## - get time since midnight 
+        
+        # generate timestamp, to get time since midnight 
+        end_timestamp = pd.Timestamp.now()
+        hours_seconds_since_midnight = end_timestamp.hour*60*60
+        min_seconds_since_midnight = end_timestamp.minute*60
+        seconds_since_midnight = hours_seconds_since_midnight + min_seconds_since_midnight + end_timestamp.second
+        
+        print( "-- the number of seconds since midnight is "+str( seconds_since_midnight ) )
+        
+        num_of_sample_time_periods_fit_in_total_sampled_period = int( seconds_since_midnight / time_length_of_sample_period__in_seconds ) 
+
+    # since midnight period 
+    if kind_of_time_period_we_are_doing == "kind_of_time_period_we_are_doing__date_range":
+
+        print("-- calculating time length in date range, starting end in "+str(if_date_range__start_time)+" - "+str(if_date_range__end_time) )
+
+        total_time = if_date_range__end_time - if_date_range__start_time
+        total_time = total_time.total_seconds()
+        num_of_sample_time_periods_fit_in_total_sampled_period = int( total_time / time_length_of_sample_period__in_seconds )
+
+
+    print("- - - - NUMBER OF SAMPLE PERIODS IN WHOLE TIME PERIOD : num_of_sample_time_periods_fit_in_total_sampled_period : "+str( num_of_sample_time_periods_fit_in_total_sampled_period ))
+    
+    # adding +1 for off-by-one-errors … 
+    return num_of_sample_time_periods_fit_in_total_sampled_period+1
+
+
+## -- --- --- --- FUNCTION : Check date validity and return a valid date if ok
+
+def check_date_string_validity_and_return_pd_timestmp_if_valid( in_date_to_test ):
+
+    print( ">>>> check_date_string_validity_and_return_pd_timestmp_if_valid() - checking in_date : |"+str( in_date_to_test )+"|" )
+
+    # split the indate 
+    in_date_raw_split = np.array(  in_date_to_test.split("-") ).astype( int ) # 1st argument 
+
+    if in_date_raw_split.shape[0] == 3:
+        print("--- ---- --- checking length : LENGTH OK - got three elements in the date -- trying to see if the input data will make a good date…")
+
+        ## decide the whole date is ok or not … 
+        try :
+            parsed_date = pd.Timestamp( in_date_raw_split[0], in_date_raw_split[1], in_date_raw_split[2] )
+        except ValueError :
+            print("--- ---- --- --- DATE NOT VALID :-( - EEEEEEXXXXIIIIITTTTTING ") 
+            sys.exit(0)
+
+        # give good news if the date works! 
+        print("--- ---- --- --- DATE OK OK OK OK ! - |"+str( parsed_date )+"|" )
+        # set the variable to do a data search for 24 hours     
+
+        return parsed_date
+
+    else:
+        print("--- ---- command line arguments - GOT THE WRONG NUMBER of arguments - wanted 0 or 1, but got "+str( len( in_date_to_test )-1 ))
+        print("--- ---- EXITING - sorry! - EXITING! ")
+        sys.exit(0)
+
+
+
+## ========================================================= PARAMETERS & disorganised line-by-line code
+
+
+
 ## --- --- --- --- --- --- database and table names 
 
 # -- DATABASE NAMES 
 
-# database_name = "ld_realtime_data_02"       # REALTIME DATA 
-database_name = "ld_ts_older_data"                   # OLDER DATA 
+database_name = "ld_realtime_data_02"       # REALTIME DATA 
+# database_name = "ld_ts_older_data"                   # OLDER DATA 
 
 
 # -- TABLE NAMES 
@@ -60,80 +142,15 @@ database_name = "ld_ts_older_data"                   # OLDER DATA
 
 ## --- table names from the ld_ts_older_data database
 # ld_ts_2018_05d_chks_ts_idx                          # OLDER DATA 
-table_name = "ld_ts_2018_05d_chks_ts_n_snid_idx"    # OLDER DATA 
+# table_name = "ld_ts_2018_05d_chks_ts_n_snid_idx"    # OLDER DATA 
+table_name = "fill_me_w_ld_daten_06"                 # realitme data 
 
 # -- COLUMN NAMES
 
-columns_names =  [ "index_", "sensor_id", "lat", "lon", "timestamp", "p1", "p2", "fixed_p1_value", "fixed_p2_value", "fixed_latlon_values" ]   # OLDER DATA 
-# columns_names =  ['sensor_id', 'sensor_name', 'lat', 'lon', 'timestamp', 'p1', 'p2']    # REALTIME DATA 
+# columns_names =  [ "index_", "sensor_id", "lat", "lon", "timestamp", "p1", "p2", "fixed_p1_value", "fixed_p2_value", "fixed_latlon_values" ]   # OLDER DATA 
+columns_names =  ['sensor_id', 'sensor_name', 'lat', 'lon', 'timestamp', 'p1', 'p2']    # REALTIME DATA 
 
 
-## --- --- --- --- --- --- general operations - what kind of time length in the data, are we outputting
-
-# ---  set default values 
-
-# Do we generate time periods since midnight (True) or full 24 hour periods ( False ) 
-# true == do since midnight until now 
-# false == do midnight to midnight from the suggested date 'start_date__if_doing_24_hours_data'
-# ( defined according to present or absent commandline input )
-do_time_since_midnight = 0 
-
-# ( defined according to present or absent commandline input )
-start_date__if_doing_24_hours_data = 0
-
-
-#--  fetch command line arguments : which might affect the above options 
-command_line_arguments__via_sys_argv = sys.argv 
-
-# check if the correct length of arguemnts are presented 
-# - one + zero arguments means make a file since midnight
-# - one + two arguments means make a file from midnight to midnight
-
-print("\n --- getting command line arguments  - got "+str( len( command_line_arguments__via_sys_argv )-1 )+" arguments ")
-
-# check if there's the number of argumetns to do the since-midnight data-generation
-if len( command_line_arguments__via_sys_argv ) == 1:
-    print("--- --- got no command line arguments - so continuing as normal in make tabular data of data since midnight")    
-    do_time_since_midnight = True
-# check if the input arguments suggsts doing a midnight-midnight data generation run ( if there's ONE arguments)
-# - then check if the date is valid and usable 
-elif len( command_line_arguments__via_sys_argv ) == 2 : 
-    print("--- ---- command line arguments - got ONE argument - making data from a midnight to another midnight  ")
-    print("--- ---- got arguments |"+str( command_line_arguments__via_sys_argv[1] )+"|")
-    print("--- ---- --- NOW CHECKING IF THE DATE IS VALID  ")
-
-    # parse the input data - split and convert to int 
-    argv_start_date_raw_split = np.array(  command_line_arguments__via_sys_argv[1].split("-") ).astype( int )
-    # check lengths 
-    if argv_start_date_raw_split.shape[0] == 3:
-        print("--- ---- --- checking length : LENGTH OK - got three elements in the date -- trying to see if the input data will make a good date…")
-
-        ## decide the whole date is ok or not … 
-        try :
-            start_date__if_doing_24_hours_data = pd.Timestamp( argv_start_date_raw_split[0], argv_start_date_raw_split[1], argv_start_date_raw_split[2] )
-        except ValueError :
-            print("--- ---- --- --- DATE NOT VALID :-( - EEEEEEXXXXIIIIITTTTTING ") 
-            sys.exit(0)
-
-        # give good news if the date works! 
-        print("--- ---- --- --- DATE OK OK OK OK ! - |"+str( start_date__if_doing_24_hours_data )+"|" )
-        # set the variable to do a data search for 24 hours 
-        do_time_since_midnight = False
-
-    else:
-        print("--- ---- --- checking length : LENGTH  NOOOOOOOT OK :-( - got |"+str( argv_start_date_raw.shape[0] )+"| date elements, needed 3 \n EEEEEEXXXXIIIIITTTTTING  ")
-        sys.exit(0)
-# if the input arguments ARENT zero or one in length, then the input is invalid … and one just has to quit :-* 
-else :
-    print("--- ---- command line arguments - GOT THE WRONG NUMBER of arguments - wanted 0 or 1, but got "+str( len( command_line_arguments__via_sys_argv )-1 ))
-    print("--- ---- EXITING - sorry! - EXITING! ")
-    sys.exit(0)
-
-
-
-
-# DEBUGGING 
-print("--- quick start_date__if_doing_24_hours_data check : "+str( start_date__if_doing_24_hours_data )+" and do_time_since_midnight : "+str( do_time_since_midnight )  ) 
 
 
 ## --- --- --- --- --- --- KEY SWITCHES
@@ -152,11 +169,14 @@ saving_data = True
 total_start_time = time.time()
 
 
+ 
 ## --- --- --- --- --- --- Filenames 
 
 
 # which directory is the file in? 
-basic_file_path_to_final_file = "/mnt/virtio-bbc6cf3a-042b-4410-9/luftdaten/luftdaten_daten/tabular_data/tabular_ld_data__30x60_s_intervals/" 
+##s# basic_file_path_to_final_file = "/mnt/virtio-bbc6cf3a-042b-4410-9/luftdaten/luftdaten_daten/tabular_data/tabular_ld_data__30x60_s_intervals/" 
+basic_file_path_to_final_file = "/mnt/virtio-bbc6cf3a-042b-4410-9/luftdaten/luftdaten_daten/tabular_data/tabular_ld_data_TEST_AREA/"
+
 
 # filename beginning for files about the laest data
 
@@ -190,7 +210,7 @@ in_data = 0
 list_of_unique_sensor_ids = []
 
 # time length of sample period
-time_length_of_sample_period__in_seconds = 60*30
+time_length_of_sample_period__in_seconds = 60*3
 
 time_length_of_sample_period__in_seconds__as_pandas_resampleing_time = str(time_length_of_sample_period__in_seconds)+"S"
 print("\n--- time_length_of_sample_period__in_seconds__as_pandas_resampleing_time : "+time_length_of_sample_period__in_seconds__as_pandas_resampleing_time )
@@ -209,50 +229,81 @@ default__generate_data_from_last_midnight_until_current_time =  "default__genera
 # set global variable 
 current_time_duration_in_data_generation = 0
 
-# which are we using? 
-if do_time_since_midnight == True : 
-    current_time_duration_in_data_generation = default__generate_data_from_last_midnight_until_current_time
-else : 
-    current_time_duration_in_data_generation = default__generate_data_for_24_hour_period_starting_from_starttime
 
 
 
 
 
 
+## --- --- --- --- --- --- general operations - what kind of time length in the data, are we outputting
 
-## -- --- --- --- FUNCTION : How many sample periods fit into the time duration examined?
+# ---  set default values 
+
+# Do we generate time periods since midnight (True) or full 24 hour periods ( False ) 
+# true == do since midnight until now 
+# false == do midnight to midnight from the suggested date 'start_date__if_doing_24_hours_data'
+# ( defined according to present or absent commandline input )
+do_time_since_midnight = 0 
+
+# value templates 
+kind_of_time_period_we_are_doing__since_midnight = "kind_of_time_period_we_are_doing__since_midnight"
+kind_of_time_period_we_are_doing__one_day_only = "kind_of_time_period_we_are_doing__one_day_only"
+kind_of_time_period_we_are_doing__date_range = "kind_of_time_period_we_are_doing__date_range"
+# actual value used 
+kind_of_time_period_we_are_doing = kind_of_time_period_we_are_doing__one_day_only
 
 
-def figure_out_how_many_sample_time_periods_fit_in_desired_sample_time_duration( do_time_since_midnight, time_length_of_sample_period__in_seconds ):
-    
-    print("\n >>> figure_out_how_many_sample_time_periods_fit_in_desired_sample_time_duration : checking time period : doing time since midnight : |"+str(do_time_since_midnight)+"| single sample time length : "+str(time_length_of_sample_period__in_seconds) )
-    
-    num_of_sample_time_periods_fit_in_total_sampled_period = 0
-    
-    # 24 hours period
-    if do_time_since_midnight == False:
-        num_of_sample_time_periods_fit_in_total_sampled_period = int( ( 24*60*60 / time_length_of_sample_period__in_seconds ) ) 
-    
-    # since midnight period 
-    if do_time_since_midnight == True:
-        ## - get time since midnight 
-        
-        # generate timestamp, to get time since midnight 
-        end_timestamp = pd.Timestamp.now()
-        hours_seconds_since_midnight = end_timestamp.hour*60*60
-        min_seconds_since_midnight = end_timestamp.minute*60
-        seconds_since_midnight = hours_seconds_since_midnight + min_seconds_since_midnight + end_timestamp.second
-        
-        print( "-- the number of seconds since midnight is "+str( seconds_since_midnight ) )
-        
-        num_of_sample_time_periods_fit_in_total_sampled_period = int( seconds_since_midnight / time_length_of_sample_period__in_seconds ) 
-        
-        
-    print("- - - - NUMBER OF SAMPLE PERIODS IN WHOLE TIME PERIOD : num_of_sample_time_periods_fit_in_total_sampled_period : "+str( num_of_sample_time_periods_fit_in_total_sampled_period ))
-    
-    # adding +1 for off-by-one-errors … 
-    return num_of_sample_time_periods_fit_in_total_sampled_period+1
+# ( defined according to present or absent commandline input )
+start_date__if_doing_24_hours_data = 0
+
+
+#--  fetch command line arguments : which might affect the above options 
+command_line_arguments__via_sys_argv = sys.argv 
+
+# check if the correct length of arguemnts are presented 
+# - one + zero arguments means make a file since midnight
+# - one + two arguments means make a file from midnight to midnight
+
+print("\n --- getting command line arguments  - got "+str( len( command_line_arguments__via_sys_argv )-1 )+" arguments ")
+
+# check if there's the number of argumetns to do the since-midnight data-generation
+if len( command_line_arguments__via_sys_argv ) == 1:
+    print("--- --- got no command line arguments - so continuing as normal in make tabular data of data since midnight")    
+    kind_of_time_period_we_are_doing = kind_of_time_period_we_are_doing__since_midnight
+# - IF DOING A SINGLE DAY, with a given date… 
+# check if the input arguments suggsts doing a midnight-midnight data generation run ( if there's ONE arguments)
+# - then check if the date is valid and usable 
+elif len( command_line_arguments__via_sys_argv ) == 2 : 
+    print("--- ---- command line arguments - got ONE argument - making data from a midnight to another midnight  ")
+    print("--- ---- got arguments |"+str( command_line_arguments__via_sys_argv[1] )+"|")
+    print("--- ---- --- NOW CHECKING IF THE DATE IS VALID  ")
+
+    start_date__if_doing_24_hours_data = check_date_string_validity_and_return_pd_timestmp_if_valid( command_line_arguments__via_sys_argv[1] )
+    #
+    kind_of_time_period_we_are_doing = kind_of_time_period_we_are_doing__one_day_only
+
+# - IF DOING A DATE RANGE - between first and last date! 
+# check if the input arguments suggsts doing a midnight-midnight data generation run ( if there's ONE arguments)
+# - then check if the date is valid and usable 
+elif len( command_line_arguments__via_sys_argv ) == 3 : 
+    print("--- ---- command line arguments - got TWO arguments - making data from the suggested start/end date … i.e. "+str(command_line_arguments__via_sys_argv[1])+" - "+str(command_line_arguments__via_sys_argv[2])+"" )
+    print("--- ---- got arguments |"+str( command_line_arguments__via_sys_argv[1] )+"|")
+    print("--- ---- --- NOW CHECKING IF THE DATE IS VALID  ")
+
+    start_date_if_doing_date_range_data_gen = check_date_string_validity_and_return_pd_timestmp_if_valid( command_line_arguments__via_sys_argv[1] )
+    end_date_if_doing_date_range_data_gen = check_date_string_validity_and_return_pd_timestmp_if_valid( command_line_arguments__via_sys_argv[2] )
+    #
+    kind_of_time_period_we_are_doing = kind_of_time_period_we_are_doing__date_range
+
+    print("--- --- DOING DATE RANGE - got two dates parsed : |"+str(start_date_if_doing_date_range_data_gen)+"| - |"+str(end_date_if_doing_date_range_data_gen)+"|" )
+
+
+
+
+
+
+# DEBUGGING 
+print("--- quick start_date__if_doing_24_hours_data check : "+str( start_date__if_doing_24_hours_data )+" and kind_of_time_period_we_are_doing : "+str( kind_of_time_period_we_are_doing )  ) 
 
 
 
@@ -263,25 +314,32 @@ def figure_out_how_many_sample_time_periods_fit_in_desired_sample_time_duration(
 end_timestamp = 0
 start_timestamp = 0
 
-print("--- generating start/end timestamps for the pqsl query : do_time_since_midnight is : |"+str( do_time_since_midnight)+"| start_date__if_doing_24_hours_data looks like : |"+str( start_date__if_doing_24_hours_data)+"|" )
+print("--- generating start/end timestamps for the pqsl query : kind_of_time_period_we_are_doing is : |"+str( kind_of_time_period_we_are_doing)+"| start_date__if_doing_24_hours_data looks like : |"+str( start_date__if_doing_24_hours_data)+"|" )
 
 # if generating data from last midnight until current time
-if do_time_since_midnight == True:    
+if kind_of_time_period_we_are_doing == kind_of_time_period_we_are_doing__since_midnight:    
     # the start timestamp would be last midnight 
     timestamp_now = pd.Timestamp.now()
     start_timestamp = pd.Timestamp( timestamp_now.year, timestamp_now.month, timestamp_now.day, 0 )
     # timestamp last midnight 
     end_timestamp = pd.Timestamp.now()
+    #
 # or, ir generating data from midnight to midnight
-elif do_time_since_midnight == False:
+elif kind_of_time_period_we_are_doing == kind_of_time_period_we_are_doing__one_day_only:
     # the start timestamp would be last midnight 
     start_timestamp = start_date__if_doing_24_hours_data
     # timestamp last midnight 
     end_timestamp = start_timestamp + pd.DateOffset(1)
+    #
+elif kind_of_time_period_we_are_doing == kind_of_time_period_we_are_doing__date_range:
+    # the start timestamp would be last midnight 
+    start_timestamp = start_date_if_doing_date_range_data_gen
+    # timestamp last midnight 
+    end_timestamp = end_date_if_doing_date_range_data_gen
 
 
 # time feedback 
-print2( "\n-- generating relevant start/end tiemstamps, in mode |"+str(do_time_since_midnight)+"| \n \t got start time "+str( start_timestamp )+" and end time "+str( end_timestamp ) )
+print2( "\n-- generating relevant start/end tiemstamps, in mode |"+str(kind_of_time_period_we_are_doing)+"| \n \t got start time "+str( start_timestamp )+" and end time "+str( end_timestamp ) )
 
 
 
@@ -352,7 +410,7 @@ in_data = in_data.sort_index()
 
 
 # --- test fetching the number of sample periods in 24 hours 
-num_of_sample_time_periods_in_whole_time_span__for_basic_data = figure_out_how_many_sample_time_periods_fit_in_desired_sample_time_duration( do_time_since_midnight, time_length_of_sample_period__in_seconds )
+num_of_sample_time_periods_in_whole_time_span__for_basic_data = figure_out_how_many_sample_time_periods_fit_in_desired_sample_time_duration( kind_of_time_period_we_are_doing, time_length_of_sample_period__in_seconds, start_timestamp, end_timestamp )
 
 """
 # if generating data from last midnight until current time
@@ -536,13 +594,17 @@ if saving_data == True :
     ## --  produce a different filename depending on which data generating mode we're in… 
 
     # if generating data from last midnight until current time
-    if do_time_since_midnight == True:
+    if kind_of_time_period_we_are_doing == kind_of_time_period_we_are_doing__since_midnight:
         curr_filename = basic_file_path_to_final_file+file_name__for__generate_data_since_midnight+file_name_suffix
     #
     # or, ir generating data from midnight to midnight
-    elif do_time_since_midnight == False:
+    elif kind_of_time_period_we_are_doing == kind_of_time_period_we_are_doing__one_day_only:
         curr_timedate = pd.Timestamp.now()
         curr_filename = basic_file_path_to_final_file+file_name__for__generate_given_24_hours+str( start_date__if_doing_24_hours_data.year )+"-"+str( start_date__if_doing_24_hours_data.month )+"-"+str( start_date__if_doing_24_hours_data.day)+file_name_suffix
+    # or, ir generating data from midnight to midnight
+    elif kind_of_time_period_we_are_doing == kind_of_time_period_we_are_doing__date_range:
+        curr_timedate = pd.Timestamp.now()
+        curr_filename = basic_file_path_to_final_file+file_name__for__generate_given_24_hours+str( start_timestamp.year )+"-"+str( start_timestamp.month )+"-"+str( start_timestamp.day)+"__"+str( end_timestamp.year )+"-"+str( end_timestamp.month )+"-"+str( end_timestamp.day)+file_name_suffix
  
     print2( "\n -- -- -- -- : saving filename |"+curr_filename+"|" )
 

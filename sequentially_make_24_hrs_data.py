@@ -29,7 +29,7 @@ def makedates( start_timestamp, how_many_days_dates_to_produce ):
 
 ## -- run?!
 
-days_to_make = makedates( pd.Timestamp( 2018, 12, 1), 62 )
+days_to_make = makedates( pd.Timestamp( 2019, 3, 1), 20 )
 
 
 

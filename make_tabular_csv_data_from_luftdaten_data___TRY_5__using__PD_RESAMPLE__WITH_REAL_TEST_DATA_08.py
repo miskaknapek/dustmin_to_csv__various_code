@@ -50,8 +50,8 @@ def print( x ):
 
 # -- DATABASE NAMES 
 
-# database_name = "ld_realtime_data_02"       # REALTIME DATA 
-database_name = "ld_ts_older_data"                   # OLDER DATA 
+database_name = "ld_realtime_data_02"       # REALTIME DATA 
+# database_name = "ld_ts_older_data"                   # OLDER DATA 
 
 
 # -- TABLE NAMES 
@@ -60,12 +60,13 @@ database_name = "ld_ts_older_data"                   # OLDER DATA
 
 ## --- table names from the ld_ts_older_data database
 # ld_ts_2018_05d_chks_ts_idx                          # OLDER DATA 
-table_name = "ld_ts_2018_05d_chks_ts_n_snid_idx"    # OLDER DATA 
+# table_name = "ld_ts_2018_05d_chks_ts_n_snid_idx"    # OLDER DATA 
+table_name = "fill_me_w_ld_daten_06"                 # realitme data 
 
 # -- COLUMN NAMES
 
-columns_names =  [ "index_", "sensor_id", "lat", "lon", "timestamp", "p1", "p2", "fixed_p1_value", "fixed_p2_value", "fixed_latlon_values" ]   # OLDER DATA 
-# columns_names =  ['sensor_id', 'sensor_name', 'lat', 'lon', 'timestamp', 'p1', 'p2']    # REALTIME DATA 
+# columns_names =  [ "index_", "sensor_id", "lat", "lon", "timestamp", "p1", "p2", "fixed_p1_value", "fixed_p2_value", "fixed_latlon_values" ]   # OLDER DATA 
+columns_names =  ['sensor_id', 'sensor_name', 'lat', 'lon', 'timestamp', 'p1', 'p2']    # REALTIME DATA 
 
 
 ## --- --- --- --- --- --- general operations - what kind of time length in the data, are we outputting
@@ -156,7 +157,7 @@ total_start_time = time.time()
 
 
 # which directory is the file in? 
-basic_file_path_to_final_file = "/mnt/virtio-bbc6cf3a-042b-4410-9/luftdaten/luftdaten_daten/tabular_data/" 
+basic_file_path_to_final_file = "/mnt/virtio-bbc6cf3a-042b-4410-9/luftdaten/luftdaten_daten/tabular_data/tabular_ld_data__30x60_s_intervals/" 
 
 # filename beginning for files about the laest data
 
